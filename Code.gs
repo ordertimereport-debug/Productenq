@@ -1,9 +1,35 @@
-// Google Apps Script — paste in Extensions > Apps Script of your Google Sheet
+// Google Apps Script — deploy as Web app (Execute as: Me, Access: Anyone)
+
+// Google Sheet-oda peyar (exact-ah irukkanum). ID type panna thevai illa.
+const SHEET_FILE_NAME = "Get your offer price";
 const SHEET_NAME = "Leads";
+
+function getSpreadsheet() {
+  const files = DriveApp.getFilesByName(SHEET_FILE_NAME);
+  if (!files.hasNext()) throw new Error("Sheet not found: " + SHEET_FILE_NAME);
+  return SpreadsheetApp.open(files.next());
+}
+
+// Browser-la web app URL open pannina "OK" nu theriyanum (deployment test)
+function doGet() {
+  return ContentService.createTextOutput("OK - web app is working");
+}
+
+// Editor-la idhai ONE TIME "Run" pannunga: permission kekkum (Allow pannanum),
+// apparam sheet-la test row varum. Error irundha Execution log-la theriyum.
+function testWrite() {
+  const fake = {
+    postData: { contents: JSON.stringify({
+      shopName: "Test Shop", district: "Test", city: "Test", contact: "9999999999",
+      products: { "Test Product": "Type: Plain | Qty: 1" }, bioBagNote: ""
+    }) }
+  };
+  doPost(fake);
+}
 
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   const sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
   const productNames = Object.keys(data.products);
 
