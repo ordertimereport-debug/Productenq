@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Asiaforms - Fill and get your offer price</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;padding:18px 12px 36px;background:#EFEAE2;font-family:"DM Sans",system-ui,-apple-system,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:600px;margin:0 auto}
+  .stack{display:flex;flex-direction:column;gap:14px}
+  .card{background:#fff;border:1px solid #D1D7DB;border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .topbar{height:8px;background:#075E54;width:100%}
+  .brand{padding:26px 24px;text-align:center}
+  .brand img{height:96px;width:auto;max-width:300px;object-fit:contain;display:block;margin:0 auto 16px}
+  .brand h1{margin:0;font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:24px;font-weight:700;letter-spacing:-.02em;color:#0f172a}
+  .section{padding:18px 20px}
+  .sec-title{margin:0 0 14px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:14px;font-weight:700;color:#075E54}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}.brand img{height:112px}}
+  .field label{display:block;font-size:12px;font-weight:600;color:#334155;margin-bottom:4px}
+  .req{color:#dc2626}
+  input[type=text],input[type=tel],textarea{width:100%;min-height:44px;padding:10px 14px;border:1px solid #cbd5e1;border-radius:12px;background:#F8FAFC;font-size:14px;font-family:inherit;color:#0f172a;outline:none;transition:border-color .15s,background-color .15s,box-shadow .15s}
+  input[type=text]:focus,input[type=tel]:focus,textarea:focus{border-color:#008069;background:#fff;box-shadow:0 0 0 3px rgba(0,128,105,.15)}
+  textarea{min-height:72px;resize:vertical}
+  .prod-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e2e8f0}
+  .prod-head p{margin:2px 0 0;font-size:12px;color:#64748b}
+  .sel-count{font-size:12px;font-weight:600;color:#008069;font-variant-numeric:tabular-nums}
+  .prod-row{border-bottom:1px solid #e2e8f0;transition:background-color .15s}
+  .prod-row:last-child{border-bottom:none}
+  .prod-row.filled{background:rgba(231,252,235,.55)}
+  .prod-row.open{background:rgba(240,253,244,.65)}
+  .prod-btn{width:100%;min-height:50px;padding:12px 20px;border:none;background:transparent;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;cursor:pointer;font-family:inherit}
+  .prod-btn:hover{background:rgba(248,250,252,.8)}
+  .prod-title-wrap{min-width:0;flex:1}
+  .prod-title-line{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#0f172a}
+  .prod-summary{margin-top:2px;padding-left:22px;font-size:12px;font-weight:500;color:#008069;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chev{width:16px;height:16px;color:#64748b;transition:transform .2s;flex-shrink:0}
+  .prod-row.open .chev{transform:rotate(180deg);color:#008069}
+  .prod-body{display:none;background:#fff;border-top:1px solid rgba(226,232,240,.85);padding:14px 20px}
+  .prod-row.open .prod-body{display:block}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .chip{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;font-size:13px;font-weight:500;color:#334155;cursor:pointer;user-select:none}
+  .chip input{accent-color:#008069;width:16px;height:16px}
+  .chip.active{border-color:#008069;background:#E7FCEB;color:#075E54;font-weight:600}
+  .qty-row{display:flex;flex-direction:column;gap:8px}
+  @media(min-width:640px){.qty-row{flex-direction:row;align-items:center}}
+  .qty-row input{flex:1}
+  .done-btn{min-height:44px;padding:10px 20px;border:none;border-radius:12px;background:#008069;color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .done-btn:hover{background:#075E54}
+  .paired-item{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  @media(min-width:640px){.paired-item{flex-direction:row;align-items:center}.paired-item .chip{min-width:140px}}
+  .submit-btn{width:100%;min-height:50px;border:none;border-radius:16px;background:#008069;color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .submit-btn:hover{background:#075E54}
+  .submit-btn:disabled{opacity:.6;cursor:wait}
+  .err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:500;display:none}
+  .err.show{display:block}
+  /* Success Modal + Lottie-style SVG animation */
+  .overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:99}
+  .overlay.show{display:flex;animation:fadeIn .2s ease-out}
+  .modal{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:32px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 24px 48px rgba(0,0,0,.25);animation:popIn .35s cubic-bezier(.16,1,.3,1)}
+  .anim-wrap{position:relative;width:96px;height:96px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center}
+  .halo{position:absolute;inset:8px;border-radius:50%;background:rgba(37,211,102,.32);opacity:0}
+  .overlay.show .halo{animation:haloBurst .75s cubic-bezier(.16,1,.3,1) .15s forwards}
+  .ring-circle{stroke-dasharray:227;stroke-dashoffset:227;transform:rotate(-90deg);transform-origin:40px 40px}
+  .overlay.show .ring-circle{animation:drawRing .45s cubic-bezier(.22,1,.36,1) forwards}
+  .fill-circle{transform:scale(.35);opacity:0;transform-origin:40px 40px}
+  .overlay.show .fill-circle{animation:popCircle .4s cubic-bezier(.34,1.56,.64,1) .14s forwards}
+  .check-path{stroke-dasharray:60;stroke-dashoffset:60;opacity:0}
+  .overlay.show .check-path{animation:drawCheck .35s cubic-bezier(.22,1,.36,1) .3s forwards}
+  .modal h3{margin:0 0 8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:24px;font-weight:700;color:#0f172a}
+  .modal p{margin:0 0 10px;color:#475569;font-size:15px;line-height:1.5}
+  .ref{font-family:monospace;font-size:12px;color:#64748b;margin-bottom:22px}
+  .ok-btn{width:100%;min-height:44px;border:none;border-radius:12px;background:#008069;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+  .ok-btn:hover{background:#075E54}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  @keyframes haloBurst{0%{transform:scale(.55);opacity:.55}100%{transform:scale(1.45);opacity:0}}
+  @keyframes drawRing{to{stroke-dashoffset:0}}
+  @keyframes popCircle{to{transform:scale(1);opacity:1}}
+  @keyframes drawCheck{0%{opacity:1;stroke-dashoffset:60}100%{opacity:1;stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <form id="offerForm" class="stack">
+    <div class="card">
+      <div class="topbar"></div>
+      <div class="brand">
+        <img src="https://asiaforms.com/cdn/shop/files/Logo.PC._PNG_300x.png?v=1793686850" alt="Asiaforms logo" referrerpolicy="no-referrer" />
+        <h1>Fill and get your offer price</h1>
+      </div>
+    </div>
+
+    <div class="card section">
+      <h2 class="sec-title">Your Shop Details</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="shopName">Shop Name <span class="req">*</span></label>
+          <input id="shopName" name="shopName" type="text" placeholder="Enter Your Shop Name" required />
+        </div>
+        <div class="field">
+          <label for="contact">Contact Number <span class="req">*</span></label>
+          <input id="contact" name="contact" type="tel" placeholder="Enter Your Contact Number" required />
+        </div>
+        <div class="field">
+          <label for="district">District <span class="req">*</span></label>
+          <input id="district" name="district" type="text" placeholder="Enter Your District" required />
+        </div>
+        <div class="field">
+          <label for="city">City <span class="req">*</span></label>
+          <input id="city" name="city" type="text" placeholder="Enter Your City" required />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="prod-head">
+        <div>
+          <h2 class="sec-title" style="margin:0">Select Products</h2>
+          <p>Tap any product to choose options &amp; qty</p>
+        </div>
+        <span class="sel-count" id="selCount"></span>
+      </div>
+      <div id="productList"></div>
+    </div>
+
+    <div class="card section">
+      <label for="bioBagNote" style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:8px;line-height:1.5">
+        *If you need printed color bio bags, please share your quality requirements and other details.
+      </label>
+      <textarea id="bioBagNote" name="bioBagNote" placeholder="Type your note here..."></textarea>
+    </div>
+
+    <div class="err" id="errBox"></div>
+
+    <button type="submit" id="submitBtn" class="submit-btn">Get an Offer Price</button>
+  </form>
+</div>
+
+<div class="overlay" id="popup" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="anim-wrap">
+      <div class="halo"></div>
+      <svg viewBox="0 0 80 80" width="80" height="80">
+        <circle class="ring-circle" cx="40" cy="40" r="36" fill="none" stroke="#008069" stroke-width="3" stroke-linecap="round" />
+        <circle class="fill-circle" cx="40" cy="40" r="32" fill="#008069" />
+        <path class="check-path" d="M26 41.5 L35.5 51 L55 30.5" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+    <h3>Successfully Submitted</h3>
+    <p>Our sales executive will call you shortly.</p>
+    <div class="ref" id="refId"></div>
+    <button type="button" class="ok-btn" id="closePopup">OK</button>
+  </div>
+</div>
+
+<script>
+  const SHEET_URL = "https://script.google.com/macros/s/AcJqEcaf2e4NE25MH156rjvZEYiLqLp3gx-N4416Pdq1DaUWDOpNbf7XcKBjqx0BgRLwBk4XLs3B/exec";
+  const PRODUCTS = [{"id":1,"name":"2 inch - 57mm x 13mtr","title":"1) 2 inch - 57mm x 13mtr","options":["Plain 48 GSM","Tint Roll (5 colors)"],"qtyPlaceholder":"Enter Your Qty"},{"id":2,"name":"3 inch - 79mm x 40mtr","title":"2) 3 inch - 79mm x 40mtr","options":["Plain 48 GSM","Tint Roll (5 colors)","Border Roll (5 colors)"],"qtyPlaceholder":"Enter Your Quantity"},{"id":3,"name":"4 inch - 110mm x 90mtr","title":"3) 4 inch - 110mm x 90mtr","options":["Plain 48 GSM","Tint Roll (5 colors)","Border Roll (5 colors)"],"qtyPlaceholder":"Enter Your Quantity"},{"id":4,"name":"3 inch - 79mm x 40mtr Printing","title":"4) 3 inch - 79mm x 40mtr Printing","options":["Single Color","Double Color","Multi Color"],"qtyPlaceholder":"Enter Your Quantity"},{"id":5,"name":"4 inch - 110mm x 90mtr Printing","title":"5) 4 inch - 110mm x 90mtr Printing","options":["Plain","Single Color","Double Color","Multi Color"],"qtyPlaceholder":"Enter Your Quantity"},{"id":6,"name":"50mm x 25mm - 2ups - 2500 Stickers/roll","title":"6) 50mm x 25mm - 2ups - 2500 Stickers/roll","options":["Plain","Single Color","Double Color","Multi Color"],"qtyPlaceholder":"Enter Your Quantity"},{"id":7,"name":"35mm x 22mm - 3ups - 5000 Stickers/roll","title":"7) 35mm x 22mm - 3ups - 5000 Stickers/roll","options":["Plain","Single Color","Double Color","Multi Color"],"qtyPlaceholder":"Enter Your Quantity"},{"id":8,"name":"35mm x 25mm - 3ups - 5000 Stickers/roll","title":"8) 35mm x 25mm - 3ups - 5000 Stickers/roll","options":["Plain","Single Color","Double Color","Multi Color"],"qtyPlaceholder":"Enter Your Quantity"},{"id":9,"name":"50mm x 76mm - 2ups - 220gsm Artboard Tag","title":"9) 50mm x 76mm - 2ups - 220gsm Artboard Tag","options":["Plain","Single Color","Double Color","Multi Color"],"qtyPlaceholder":"Enter Your Quantity"},{"id":10,"name":"56cm x 70cm - News Print Paper","title":"10) 56cm x 70cm - News Print Paper","options":[],"qtyPlaceholder":"Enter Your Bundle"},{"id":11,"name":"Butter Sheet (29 x 19.25)","title":"11) Butter Sheet (29 x 19.25)","options":[],"pairedOptions":[{"option":"6.1 gsm","label":"6.1 gsm","placeholder":"/Reem"},{"option":"7.3 gsm","label":"7.3 gsm","placeholder":"/Reem"}]},{"id":12,"name":"Round Sheet","title":"12) Round Sheet","options":["6 inch (News Print Paper)","8 inch (News Print Paper)","6 inch (Butter Sheet)","8 inch (Butter Sheet)"],"qtyPlaceholder":"Enter Your Quantity"},{"id":13,"name":"110m x 300mtr Barcode Ribbon","title":"13) 110m x 300mtr Barcode Ribbon","options":["Basic Wax","Premium Wax","Premium Wax Resin"],"qtyPlaceholder":"Enter Your Quantity"},{"id":14,"name":"Bio Bag Plain","title":"14) Bio Bag Plain","options":["10 x 14","13 x 16","16 x 20","Color"],"qtyPlaceholder":"Enter Your Kg"}];
+  const listEl = document.getElementById("productList");
+  const selCountEl = document.getElementById("selCount");
+  const errBox = document.getElementById("errBox");
+  const form = document.getElementById("offerForm");
+  const btn = document.getElementById("submitBtn");
+  const popup = document.getElementById("popup");
+  const refIdEl = document.getElementById("refId");
+  let openId = null;
+
+  const state = {};
+  PRODUCTS.forEach(p => { state[p.id] = { opts: {}, qty: "", pairedQtys: {} }; });
+
+  function getSummary(p) {
+    const st = state[p.id];
+    const chosen = Object.keys(st.opts).filter(k => st.opts[k]);
+    const qtys = [];
+    if (p.pairedOptions) {
+      p.pairedOptions.forEach(po => {
+        const v = (st.pairedQtys[po.label] || "").trim();
+        if (v) qtys.push(po.label + ": " + v);
+      });
+    } else if (st.qty.trim()) {
+      qtys.push(st.qty.trim());
+    }
+    const has = chosen.length > 0 || qtys.length > 0;
+    const parts = [];
+    if (chosen.length) parts.push(chosen.join(", "));
+    if (qtys.length) parts.push("Qty: " + qtys.join(", "));
+    return { has, text: parts.join(" · "), chosen, qtys };
+  }
+
+  function renderProducts() {
+    let count = 0;
+    listEl.innerHTML = "";
+    PRODUCTS.forEach(p => {
+      const sum = getSummary(p);
+      if (sum.has) count++;
+      const row = document.createElement("div");
+      row.className = "prod-row" + (openId === p.id ? " open" : "") + (sum.has ? " filled" : "");
+
+      const trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "prod-btn";
+      trigger.innerHTML =
+        '<div class="prod-title-wrap">' +
+          '<div class="prod-title-line">' +
+            (sum.has ? '<span style="color:#008069;font-weight:700">&#10003;</span>' : '') +
+            '<span>' + p.title + '</span>' +
+          '</div>' +
+          (openId !== p.id && sum.has ? '<div class="prod-summary">' + sum.text + '</div>' : '') +
+        '</div>' +
+        '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+      trigger.onclick = () => {
+        openId = openId === p.id ? null : p.id;
+        renderProducts();
+      };
+      row.appendChild(trigger);
+
+      const body = document.createElement("div");
+      body.className = "prod-body";
+
+      if (p.pairedOptions) {
+        p.pairedOptions.forEach(po => {
+          const item = document.createElement("div");
+          item.className = "paired-item";
+          const lbl = document.createElement("label");
+          lbl.className = "chip" + (state[p.id].opts[po.option] ? " active" : "");
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = !!state[p.id].opts[po.option];
+          cb.onchange = () => {
+            state[p.id].opts[po.option] = cb.checked;
+            lbl.className = "chip" + (cb.checked ? " active" : "");
+          };
+          lbl.appendChild(cb);
+          lbl.appendChild(document.createTextNode(po.option));
+          const inp = document.createElement("input");
+          inp.type = "text";
+          inp.placeholder = "QTY (" + po.placeholder + ")";
+          inp.value = state[p.id].pairedQtys[po.label] || "";
+          inp.oninput = () => { state[p.id].pairedQtys[po.label] = inp.value; };
+          inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); openId = null; renderProducts(); } };
+          item.appendChild(lbl);
+          item.appendChild(inp);
+          body.appendChild(item);
+        });
+        const doneWrap = document.createElement("div");
+        doneWrap.style.textAlign = "right";
+        const done = document.createElement("button");
+        done.type = "button";
+        done.className = "done-btn";
+        done.textContent = "Done";
+        done.onclick = () => { openId = null; renderProducts(); };
+        doneWrap.appendChild(done);
+        body.appendChild(doneWrap);
+      } else {
+        if (p.options.length) {
+          const chips = document.createElement("div");
+          chips.className = "chips";
+          p.options.forEach(opt => {
+            const lbl = document.createElement("label");
+            lbl.className = "chip" + (state[p.id].opts[opt] ? " active" : "");
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.checked = !!state[p.id].opts[opt];
+            cb.onchange = () => {
+              state[p.id].opts[opt] = cb.checked;
+              lbl.className = "chip" + (cb.checked ? " active" : "");
+            };
+            lbl.appendChild(cb);
+            lbl.appendChild(document.createTextNode(opt));
+            chips.appendChild(lbl);
+          });
+          body.appendChild(chips);
+        }
+        const qrow = document.createElement("div");
+        qrow.className = "qty-row";
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.placeholder = p.qtyPlaceholder || "Enter Your Quantity";
+        inp.value = state[p.id].qty;
+        inp.oninput = () => { state[p.id].qty = inp.value; };
+        inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); openId = null; renderProducts(); } };
+        const done = document.createElement("button");
+        done.type = "button";
+        done.className = "done-btn";
+        done.textContent = "Done";
+        done.onclick = () => { openId = null; renderProducts(); };
+        qrow.appendChild(inp);
+        qrow.appendChild(done);
+        body.appendChild(qrow);
+      }
+
+      row.appendChild(body);
+      listEl.appendChild(row);
+    });
+    selCountEl.textContent = count > 0 ? count + " selected" : "";
+  }
+
+  renderProducts();
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    errBox.classList.remove("show");
+    if (!SHEET_URL || SHEET_URL.indexOf("https://script.google.com/") !== 0) {
+      errBox.textContent = "Google Apps Script Web App URL is not configured.";
+      errBox.classList.add("show");
+      return;
+    }
+    const fd = new FormData(form);
+    const contact = String(fd.get("contact") || "").trim();
+    const digits = contact.replace(/\D/g, "");
+    if (digits.length < 7 || digits.length > 15) {
+      errBox.textContent = "Please enter a valid Contact Number (at least 7 digits).";
+      errBox.classList.add("show");
+      return;
+    }
+    const productsOut = {};
+    PRODUCTS.forEach(p => {
+      const sum = getSummary(p);
+      productsOut[p.name] = sum.has
+        ? [sum.chosen.length ? "Type: " + sum.chosen.join(", ") : "", sum.qtys.length ? "Qty: " + sum.qtys.join(", ") : ""].filter(Boolean).join(" | ")
+        : "";
+    });
+    const refId = "AF-" + Date.now().toString(36).toUpperCase();
+    const payload = {
+      id: refId,
+      submittedAt: new Date().toISOString(),
+      shopName: String(fd.get("shopName") || "").trim(),
+      district: String(fd.get("district") || "").trim(),
+      city: String(fd.get("city") || "").trim(),
+      contact,
+      products: productsOut,
+      bioBagNote: String(fd.get("bioBagNote") || "").trim()
+    };
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+    try {
+      await fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      form.reset();
+      PRODUCTS.forEach(p => { state[p.id] = { opts: {}, qty: "", pairedQtys: {} }; });
+      openId = null;
+      renderProducts();
+      refIdEl.textContent = "Reference ID: " + refId;
+      popup.classList.add("show");
+    } catch (err) {
+      errBox.textContent = "Submit failed. Please check your internet connection and try again.";
+      errBox.classList.add("show");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Get an Offer Price";
+    }
+  });
+
+  document.getElementById("closePopup").onclick = () => popup.classList.remove("show");
+</script>
+</body>
+</html>
